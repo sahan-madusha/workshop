@@ -9,14 +9,12 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="min-h-screen bg-slate-50 text-gray-900 flex flex-col justify-between font-sans">
-        <Header />
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   );
