@@ -1,17 +1,20 @@
 import React from 'react';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
+import { Contact } from './pages/contact';
 
 const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-900 flex flex-col justify-between font-sans">
-      <Header />
-      <main className="flex-grow">
-        <Home />
-      </main>
-      <Footer />
-    </div>
+    <Router>
+      <div className="min-h-screen bg-slate-50 text-gray-900 flex flex-col justify-between font-sans">
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
   );
 };
 
