@@ -1,4 +1,5 @@
 import React from 'react';
+import { UserFetcher } from '../components/UserFetcher';
 
 export const Home: React.FC = () => {
   return (
@@ -7,20 +8,13 @@ export const Home: React.FC = () => {
       <section id="home" className="bg-white border border-gray-200 p-6 rounded-xl shadow-xs space-y-2">
         <h1 className="text-2xl font-bold text-gray-900">Hi, I'm Sahan 👋</h1>
         <p className="text-gray-600 text-sm leading-relaxed">
-          Welcome to the Day 02 React + TypeScript Workshop! This simple project shows how to organize React folders cleanly.
+          Welcome to the Day 02 React + TypeScript Workshop! This simple project shows how to fetch backend API data and present it in a table.
         </p>
       </section>
 
-      <section>
-        <h2>Our Teams</h2>
-        <ul>
-          <li>Sahan Madusha</li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-        </ul>
-      </section>
+      {/* User Fetcher Component showcasing API Call and Table with Search */}
+      <UserFetcher />
     </div>
   );
 };
+

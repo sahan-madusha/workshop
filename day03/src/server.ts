@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes';
 
@@ -6,9 +7,10 @@ import userRoutes from './routes/userRoutes';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
-// Middleware: allow server to parse JSON request bodies
+// Middleware: Enable Cross-Origin Resource Sharing (CORS) & parse JSON request bodies
+app.use(cors());
 app.use(express.json());
 
 // Root welcome route
