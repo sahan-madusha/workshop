@@ -51,6 +51,3 @@ ehthumbs.db
 # Testing & Code Coverage
 coverage/
 .nyc_output/
-# Ignored Folders
-day01/
-day02/
