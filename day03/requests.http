@@ -1,0 +1,45 @@
+### Day 03 Backend Workshop API Test Requests
+
+### 1. Root API Info
+GET http://localhost:3000/
+
+### 2. Get All Users
+GET http://localhost:3000/api/users
+
+### 3. Search Users (Search by name or email)
+GET http://localhost:3000/api/users?search=Alice
+
+### 4. Get User by ID
+GET http://localhost:3000/api/users/1
+
+### 5. Create New User
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "name": "David Miller",
+  "email": "david@example.com",
+  "role": "user"
+}
+
+### 6. Create User Validation Error (Duplicate Email Test)
+POST http://localhost:3000/api/users
+Content-Type: application/json
+
+{
+  "name": "Duplicate Test",
+  "email": "alice@example.com"
+}
+
+### 7. Update User
+PUT http://localhost:3000/api/users/2
+Content-Type: application/json
+
+{
+  "name": "Robert Smith",
+  "email": "bob.smith@example.com",
+  "role": "admin"
+}
+
+### 8. Delete User
+DELETE http://localhost:3000/api/users/3
