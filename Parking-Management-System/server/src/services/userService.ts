@@ -1,15 +1,15 @@
+import bcrypt from 'bcryptjs';
 import {
   getAllUsersFromDb,
   getUserByIdFromDb,
-  getUserByEmailFromDb,
+  getUserByUsernameFromDb,
   createUserInDb,
-  updateUserInDb,
   deleteUserFromDb
 } from '../repositories/userRepository';
 
 /**
- * SERVICE LAYER:
- * Simple functions for business rules and validations.
+ * USER SERVICE LAYER:
+ * Business rules and validations for user management.
  */
 
 // Get all users or search
@@ -26,44 +26,45 @@ export const getUserByIdService = async (id: number) => {
   return user;
 };
 
-// Create new user with validation
-export const createUserService = async (name: string, email: string, role?: string) => {
-  // Simple validation checks
-  if (!name) {
-    throw new Error('Name is required');
+// Create new user with validation and bcrypt hashing
+export const createUserService = async (data: {
+  username: string;
+  password: string;
+  employee_id?: number | null;
+  user_role_id?: number | null;
+}) => {
+  const { username, password, employee_id, user_role_id } = data;
+
+  if (!username || !username.trim()) {
+    throw new Error('Username is required.');
   }
 
-  if (!email || !email.includes('@')) {
-    throw new Error('Valid email is required');
+  if (!password || password.length < 6) {
+    throw new Error('Password must be at least 6 characters long.');
   }
 
-  // Check if email already exists
-  const existingUser = await getUserByEmailFromDb(email);
+  // Check if username already exists
+  const existingUser = await getUserByUsernameFromDb(username);
   if (existingUser) {
-    throw new Error('Email is already registered');
+    throw new Error('Username is already taken.');
   }
 
-  return await createUserInDb(name, email, role || 'user');
-};
+  // Hash password
+  const passwordHash = await bcrypt.hash(password, 10);
 
-// Update user
-export const updateUserService = async (id: number, name: string, email: string, role: string) => {
-  // Check if user exists
-  const existingUser = await getUserByIdFromDb(id);
-  if (!existingUser) {
-    throw new Error(`User with ID ${id} not found`);
-  }
-
-  return await updateUserInDb(id, name, email, role);
+  return await createUserInDb({
+    username: username.trim(),
+    passwordHash,
+    employee_id: employee_id ? Number(employee_id) : null,
+    user_role_id: user_role_id ? Number(user_role_id) : null,
+  });
 };
 
 // Delete user
 export const deleteUserService = async (id: number) => {
-  // Check if user exists
   const existingUser = await getUserByIdFromDb(id);
   if (!existingUser) {
     throw new Error(`User with ID ${id} not found`);
   }
-
   await deleteUserFromDb(id);
 };

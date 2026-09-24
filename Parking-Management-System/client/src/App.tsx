@@ -26,6 +26,12 @@ const DashboardOverview = React.lazy(() =>
   })),
 );
 
+const UsersPage = React.lazy(() =>
+  import("./Page/users/UsersPage").then((m) => ({
+    default: m.UsersPage,
+  })),
+);
+
 const queryClient = new QueryClient();
 
 function AppRoutes() {
@@ -70,6 +76,10 @@ function AppRoutes() {
                         <Route
                           path="dashboard_overview"
                           element={<DashboardOverview />}
+                        />
+                        <Route
+                          path="users"
+                          element={<UsersPage />}
                         />
                         <Route
                           path="*"

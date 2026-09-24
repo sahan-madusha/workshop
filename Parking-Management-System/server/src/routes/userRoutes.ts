@@ -3,30 +3,26 @@ import {
   getUsers,
   getUserById,
   createUser,
-  updateUser,
   deleteUser
 } from '../controllers/userController';
+import { authenticateToken } from '../middlewares/authMiddleware';
 
 const router = Router();
 
 /**
- * ROUTE LAYER:
- * Maps URL paths to controller functions.
+ * USER ROUTES (Protected by JWT Middleware)
  */
 
 // GET all users OR search: GET /api/users
-router.get('/', getUsers);
+router.get('/', authenticateToken, getUsers);
 
 // GET single user: GET /api/users/1
-router.get('/:id', getUserById);
+router.get('/:id', authenticateToken, getUserById);
 
 // POST create user: POST /api/users
-router.post('/', createUser);
-
-// PUT update user: PUT /api/users/1
-router.put('/:id', updateUser);
+router.post('/', authenticateToken, createUser);
 
 // DELETE user: DELETE /api/users/1
-router.delete('/:id', deleteUser);
+router.delete('/:id', authenticateToken, deleteUser);
 
 export default router;
