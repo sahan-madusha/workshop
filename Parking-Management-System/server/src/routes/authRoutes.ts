@@ -4,10 +4,10 @@ import { authenticateToken } from '../middlewares/authMiddleware';
 
 const router = Router();
 
-// POST /api/auth/login - User Sign In
+// POST /api/login - Sign In
 router.post('/login', login);
 
-// GET /api/auth/me - Get current user profile (Protected)
+// GET /api/me - Get current user profile (Protected)
 router.get('/me', authenticateToken, me);
 
 export default router;

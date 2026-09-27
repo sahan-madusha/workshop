@@ -1,80 +1,53 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { tokenManager } from "../Utils";
-import { User } from "../Types";
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { loginApi } from "../api/auth";
 
 interface AuthContextType {
-  user: User | null;
-  isAuth: boolean;
-  isAdmin: boolean;
-  navigationPath: string;
-  signIn: (data: any) => void;
-  signOut: () => void;
+  user: any;
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (credentials: any) => Promise<void>;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<any>(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
-  const [isAuth, setIsAuth] = useState<boolean>(() => {
-    return !!tokenManager.getToken() || localStorage.getItem("isAuth") === "true";
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem("token");
   });
 
-  const signIn = (data: any) => {
-    if (data?.token) {
-      tokenManager.setToken(data.token);
-    }
-    if (data?.user) {
-      setUser(data.user);
-      localStorage.setItem("user", JSON.stringify(data.user));
-    } else {
-      const mockUser: User = {
-        id: 1,
-        username: data?.username || "Admin",
-        email: "admin@parking.com",
-        role_id: 1,
-        role_name: "Admin",
-        employee_id: null,
-        employee_first_name: "System",
-        employee_last_name: "Admin",
-        employee_nic: null,
-        status: "Active",
-        created_at: new Date().toISOString(),
-        store_id: "1",
-        store_name: "Main Parking Facility",
-      };
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
-    }
-    setIsAuth(true);
-    localStorage.setItem("isAuth", "true");
+  const login = async (credentials: any) => {
+    const response = await loginApi(credentials);
+    const userData = response?.data?.user || { username: credentials.username };
+    const authToken = response?.data?.token || "session-token";
+
+    setUser(userData);
+    setToken(authToken);
+
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", authToken);
   };
 
-  const signOut = () => {
-    tokenManager.clearToken();
-    localStorage.removeItem("isAuth");
-    localStorage.removeItem("user");
+  const logout = () => {
     setUser(null);
-    setIsAuth(false);
+    setToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
-
-  const isAdmin = user?.role_name?.toLowerCase() === "admin" || true;
-  const navigationPath = "/system/dashboard_overview";
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuth,
-        isAdmin,
-        navigationPath,
-        signIn,
-        signOut,
+        token,
+        isAuthenticated: !!token || !!user,
+        login,
+        logout,
       }}
     >
       {children}
@@ -82,36 +55,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export const useAuthChecker = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    // Fallback if rendered outside provider
-    return {
-      user: {
-        id: 1,
-        username: "Admin",
-        email: "admin@parking.com",
-        role_id: 1,
-        role_name: "Admin",
-        employee_id: null,
-        employee_first_name: "System",
-        employee_last_name: "Admin",
-        employee_nic: null,
-        status: "Active",
-        created_at: new Date().toISOString(),
-        store_id: "1",
-        store_name: "Main Parking Facility",
-      },
-      isAuth: !!tokenManager.getToken() || localStorage.getItem("isAuth") === "true",
-      isAdmin: true,
-      navigationPath: "/system/dashboard_overview",
-      signIn: () => {},
-      signOut: () => {
-        tokenManager.clearToken();
-        localStorage.removeItem("isAuth");
-        localStorage.removeItem("user");
-      },
-    };
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

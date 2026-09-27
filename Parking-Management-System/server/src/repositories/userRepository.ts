@@ -9,12 +9,7 @@ export interface UserRow {
   user_role_id?: number | null;
 }
 
-/**
- * REPOSITORY LAYER:
- * Direct SQL queries against MySQL database `user` table.
- */
-
-// 1. Get user by username (for login & verification)
+// 1. Get user by username
 export const getUserByUsernameFromDb = async (username: string): Promise<UserRow | null> => {
   const [rows]: any = await db.execute(
     'SELECT id, username, password, last_login, employee_id, user_role_id FROM `user` WHERE username = ?',
@@ -32,22 +27,12 @@ export const getUserByIdFromDb = async (id: number): Promise<UserRow | null> => 
   return rows[0] || null;
 };
 
-// 3. Get all users or search users
-export const getAllUsersFromDb = async (search: string = ''): Promise<UserRow[]> => {
-  if (search) {
-    const [rows]: any = await db.execute(
-      'SELECT id, username, last_login, employee_id, user_role_id FROM `user` WHERE username LIKE ? ORDER BY id DESC',
-      [`%${search}%`]
-    );
-    return rows;
-  }
-  const [rows]: any = await db.execute(
-    'SELECT id, username, last_login, employee_id, user_role_id FROM `user` ORDER BY id DESC'
-  );
-  return rows;
+// 3. Update last login timestamp
+export const updateLastLoginInDb = async (id: number): Promise<void> => {
+  await db.execute('UPDATE `user` SET last_login = NOW() WHERE id = ?', [id]);
 };
 
-// 4. Create new user
+// 4. Create user (for seeding / admin setup)
 export const createUserInDb = async (userData: {
   username: string;
   passwordHash: string;
@@ -65,14 +50,4 @@ export const createUserInDb = async (userData: {
     employee_id,
     user_role_id,
   };
-};
-
-// 5. Update user last login
-export const updateLastLoginInDb = async (id: number): Promise<void> => {
-  await db.execute('UPDATE `user` SET last_login = NOW() WHERE id = ?', [id]);
-};
-
-// 6. Delete user
-export const deleteUserFromDb = async (id: number): Promise<void> => {
-  await db.execute('DELETE FROM `user` WHERE id = ?', [id]);
 };

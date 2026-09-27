@@ -34,7 +34,7 @@ export const authenticateToken = (
   }
 
   try {
-    const secret = process.env.JWT_SECRET || 'parking_system_super_secret_jwt_key_2026';
+    const secret = process.env.JWT_SECRET || 'app_super_secret_jwt_key';
     const decoded = jwt.verify(token, secret) as any;
     req.user = decoded;
     next();

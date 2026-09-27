@@ -9,7 +9,7 @@ async function seed() {
   const port = Number(process.env.DB_PORT) || 3306;
   const user = process.env.DB_USER || 'root';
   const password = process.env.DB_PASSWORD || '';
-  const database = process.env.DB_NAME || 'parking_db';
+  const database = process.env.DB_NAME || 'app_db';
 
   console.log(`📡 Connecting to MySQL at ${host}:${port}...`);
 
@@ -25,7 +25,7 @@ async function seed() {
     await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\``);
     await connection.query(`USE \`${database}\``);
 
-    // 2. Create user table as per user's specification
+    // 2. Create user table
     const createTableSQL = `
       CREATE TABLE IF NOT EXISTS \`user\` (
         \`id\` INT NOT NULL AUTO_INCREMENT,

@@ -38,7 +38,7 @@ export const loginService = async (username: string, password: string) => {
   await updateLastLoginInDb(user.id);
 
   // Generate JWT token
-  const secret = process.env.JWT_SECRET || 'parking_system_super_secret_jwt_key_2026';
+  const secret = process.env.JWT_SECRET || 'app_super_secret_jwt_key';
   const expiresIn = process.env.JWT_EXPIRES_IN || '24h';
 
   const token = jwt.sign(
